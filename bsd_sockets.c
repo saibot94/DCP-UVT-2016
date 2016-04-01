@@ -56,7 +56,8 @@ int main(int argc, const char **argv){
 
 	while(1){
 		// Handle requests
-		int client_socket;
+		int client_socket, client_port;
+		char* client_address_str;
 		struct sockaddr_in *client_socket_address;
 		socklen_t *client_socket_len;
 		client_socket_address = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in));
@@ -68,6 +69,8 @@ int main(int argc, const char **argv){
 		client_socket = accept(server_socket, (struct sockaddr *)client_socket_address, 
 			client_socket_len);
 		fprintf(stderr, "Got a new client!\n");
+		client_address_str = inet_ntoa(client_socket_address->sin_addr);
+		fprintf(stderr, "Client address: %s", client_address_str);	
 	}
 	return 0;
 }
