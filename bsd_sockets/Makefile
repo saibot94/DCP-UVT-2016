@@ -5,3 +5,5 @@ handler.o:
 bsd_sockets.o:
 	gcc -c -o bsd_sockets.o -Wall bsd_sockets.c
 
+clean:
+	rm ./*.o echo_server
