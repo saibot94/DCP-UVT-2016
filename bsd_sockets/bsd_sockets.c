@@ -2,11 +2,7 @@
 #include <stdlib.h>
 // Take a host and port number, create an echo server from that 
 
-#include <unistd.h>
-#include <sys/types.h> 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include "handler.h"
 
 int main(int argc, const char **argv){
 	int port_number, server_socket, ret;
@@ -78,7 +74,8 @@ int main(int argc, const char **argv){
 		fprintf(stderr, "Got a new client!\n");
 		client_port = ntohs(client_socket_address->sin_port);		
 		client_address_str = inet_ntoa(client_socket_address->sin_addr);
-		fprintf(stderr, "Client address: %s\n Client port: %d", client_address_str, client_port);	
+		fprintf(stderr, "Client address: %s\n Client port: %d", client_address_str, client_port);
+		handle_client(client_socket, client_socket_address);	
 	}
 	return 0;
 }
