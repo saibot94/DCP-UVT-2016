@@ -48,5 +48,10 @@ int main(int argc, const char **argv){
 		exit(1);
 	}
 	fprintf(stderr, "Socket bound successfully!\n");
+	ret = listen(server_socket, 10);
+	if(ret != 0){
+		perror("Unable to listen to bound socket");
+		exit(1);
+	}
 	return 0;
 }
