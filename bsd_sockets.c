@@ -6,7 +6,7 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
-
+#include <arpa/inet.h>
 
 int main(int argc, const char **argv){
 	int port_number, server_socket, ret;
@@ -60,17 +60,25 @@ int main(int argc, const char **argv){
 		char* client_address_str;
 		struct sockaddr_in *client_socket_address;
 		socklen_t *client_socket_len;
+
 		client_socket_address = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in));
 		client_socket_len = (socklen_t *)malloc(sizeof(socklen_t));
 		if(client_socket_address == NULL || client_socket_len == NULL){
 			perror("Unexpected");
 			exit(1);
 		}
+
+		*client_socket_len = sizeof(struct sockaddr_in);
 		client_socket = accept(server_socket, (struct sockaddr *)client_socket_address, 
 			client_socket_len);
+		if(client_socket == 0){
+			perror("Unexpected error");
+		}
+		
 		fprintf(stderr, "Got a new client!\n");
+		client_port = ntohs(client_socket_address->sin_port);		
 		client_address_str = inet_ntoa(client_socket_address->sin_addr);
-		fprintf(stderr, "Client address: %s", client_address_str);	
+		fprintf(stderr, "Client address: %s\n Client port: %d", client_address_str, client_port);	
 	}
 	return 0;
 }
