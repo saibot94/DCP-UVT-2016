@@ -78,13 +78,24 @@ int main(int argc, const char **argv){
 			client_socket_len);
 		if(client_socket == 0){
 			perror("Unexpected error");
+			exit(1);	
 		}
-		
+		ret = fork();
+		if(ret == -1){
+			perror("Unexpected");
+			exit(1);			
+		}
 		fprintf(stderr, "Got a new client!\n");
-		client_port = ntohs(client_socket_address->sin_port);		
-		client_address_str = inet_ntoa(client_socket_address->sin_addr);
-		fprintf(stderr, "Client address: %s\n Client port: %d", client_address_str, client_port);
-		handle_client(client_socket, client_socket_address);	
+		if(ret == 0){
+		  handle_client(client_socket, client_socket_address);
+		  break;	
+		}
+		else{
+		        fprintf(stderr, "Handling client... \n");	
+			client_port = ntohs(client_socket_address->sin_port);		
+			client_address_str = inet_ntoa(client_socket_address->sin_addr);		
+			fprintf(stderr, "Client address: %s\n Client port: %d", client_address_str, client_port);
+		}
 	}
 	return 0;
 }
