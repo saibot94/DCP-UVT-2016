@@ -53,5 +53,21 @@ int main(int argc, const char **argv){
 		perror("Unable to listen to bound socket");
 		exit(1);
 	}
+
+	while(1){
+		// Handle requests
+		int client_socket;
+		struct sockaddr_in *client_socket_address;
+		socklen_t *client_socket_len;
+		client_socket_address = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in));
+		client_socket_len = (socklen_t *)malloc(sizeof(socklen_t));
+		if(client_socket_address == NULL || client_socket_len == NULL){
+			perror("Unexpected");
+			exit(1);
+		}
+		client_socket = accept(server_socket, (struct sockaddr *)client_socket_address, 
+			client_socket_len);
+		fprintf(stderr, "Got a new client!\n");
+	}
 	return 0;
 }
