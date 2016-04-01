@@ -7,6 +7,7 @@
 int main(int argc, const char **argv){
 	int port_number, server_socket, ret;
 	const char *ip_address = NULL;
+	int socket_opt = 1;
 	struct sockaddr_in server_socket_address;
 	if(argc != 3){
 		fprintf(stderr, "Please call it like: app <ip_addr> <port_number>\n");
@@ -34,9 +35,17 @@ int main(int argc, const char **argv){
 		perror("Unexpected");
 		exit(1);
 	}
-
+	setsockopt(
+		server_socket,
+		SOL_SOCKET,
+		SO_REUSEADDR,
+		&socket_opt,
+		sizeof(socket_opt)
+	);
 	server_socket_address.sin_family = AF_INET;
 	server_socket_address.sin_port = htons(port_number);
+	
+
 	ret = bind(server_socket, (const struct sockaddr *) &server_socket_address, 
 				sizeof(server_socket_address));
 	if(ret != 0){
