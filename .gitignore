@@ -2,3 +2,4 @@
 *.swp
 *~
 echo_server
+*.o
