@@ -4,3 +4,4 @@
 echo_server
 *.o
 .DS_Store
+local_server
