@@ -88,13 +88,14 @@ int main(int argc, const char **argv){
 		fprintf(stderr, "Got a new client!\n");
 		if(ret == 0){
 		  handle_client(client_socket, client_socket_address);
-		  break;	
+		  break;
 		}
 		else{
-		        fprintf(stderr, "Handling client... \n");	
+		    fprintf(stderr, "Handling client... \n");	
 			client_port = ntohs(client_socket_address->sin_port);		
 			client_address_str = inet_ntoa(client_socket_address->sin_addr);		
 			fprintf(stderr, "Client address: %s\n Client port: %d", client_address_str, client_port);
+			close(client_socket);
 		}
 	}
 	return 0;
