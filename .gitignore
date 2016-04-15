@@ -3,3 +3,4 @@
 *~
 echo_server
 *.o
+.DS_Store
