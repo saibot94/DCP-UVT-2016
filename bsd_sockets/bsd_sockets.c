@@ -4,6 +4,48 @@
 
 #include "handler.h"
 
+
+const char* SOCKET_PATH = "/Users/chris/my_socket";
+
+
+int connect_server_locally() {
+ struct sockaddr_un addr;
+ int fd;
+
+ if ((fd = socket(AF_LOCAL, SOCK_STREAM, 0)) < 0) {
+  perror("Failed to create client socket");
+  return fd;
+ }
+
+ memset(&addr, 0, sizeof(addr));
+
+ addr.sun_family = AF_LOCAL;
+ strcpy(addr.sun_path, SOCKET_PATH);
+ 
+ int optval = 1;
+ setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+ 
+ setsockopt(
+		fd,
+		SOL_SOCKET,
+		SO_REUSEADDR,
+		&optval,
+		sizeof(optval));
+
+
+ if (connect(fd,
+             (struct sockaddr *) &(addr),
+             sizeof(addr)) < 0) {
+  perror("Failed to connect to server");
+  return -1;
+ }
+
+
+ /* Add handler to handle events */
+
+ return fd;
+}
+
 int main(int argc, const char **argv){
 	int port_number, server_socket, ret;
 	const char *ip_address = NULL;
@@ -76,26 +118,32 @@ int main(int argc, const char **argv){
 		*client_socket_len = sizeof(struct sockaddr_in);
 		client_socket = accept(server_socket, (struct sockaddr *)client_socket_address, 
 			client_socket_len);
+
+		int local_server_fd = connect_server_locally();
+
 		if(client_socket == 0){
 			perror("Unexpected error");
 			exit(1);	
 		}
+		fprintf(stderr, "Got a new client!\n");
+
 		ret = fork();
 		if(ret == -1){
 			perror("Unexpected");
 			exit(1);			
 		}
-		fprintf(stderr, "Got a new client!\n");
 		if(ret == 0){
-		  handle_client(client_socket, client_socket_address);
+		  handle_client(client_socket, client_socket_address, local_server_fd);
+		  close(local_server_fd);
 		  break;
 		}
 		else{
 		    fprintf(stderr, "Handling client... \n");	
 			client_port = ntohs(client_socket_address->sin_port);		
 			client_address_str = inet_ntoa(client_socket_address->sin_addr);		
-			fprintf(stderr, "Client address: %s\n Client port: %d", client_address_str, client_port);
+			fprintf(stderr, "Client address: %s\n Client port: %d\n", client_address_str, client_port);
 			close(client_socket);
+			close(local_server_fd);
 		}
 	}
 	return 0;

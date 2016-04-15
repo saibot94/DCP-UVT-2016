@@ -1,6 +1,8 @@
 #ifndef _HANDLER_H
 #define _HANDLER_H
-
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 #include <unistd.h>
 #include <sys/types.h> 
@@ -10,10 +12,9 @@
 #include <sys/un.h>
 
 
-#define SOCKET_PATH "/tmp/my_socket_path"
 
 
 void handle_client(int client_socket,
-		struct sockaddr_in *client_socket_addr);
+		struct sockaddr_in *client_socket_addr, int local_server_fd);
 
 #endif

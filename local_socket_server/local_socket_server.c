@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h> 
 #include <sys/socket.h>
@@ -10,7 +10,8 @@
 #include <sys/un.h>
 
 
-#define SOCKET_PATH "/tmp/my_socket_path"
+const char* SOCKET_PATH = "/Users/chris/my_socket";
+
 #define MAX_PENDING 10
 
 int create_server() {
@@ -25,8 +26,19 @@ int create_server() {
  memset(&addr, 0, sizeof(addr));
 
  addr.sun_family = AF_LOCAL;
+
  unlink(SOCKET_PATH);
  strcpy(addr.sun_path, SOCKET_PATH);
+
+ int optval = 1;
+ //setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+ 
+ // setsockopt(
+	// 	fd,
+	// 	SOL_SOCKET,
+	// 	SO_REUSEADDR,
+	// 	&optval,
+	// 	sizeof(optval));
 
  if (bind(fd, (struct sockaddr *) &(addr),
                               sizeof(addr)) < 0) {
@@ -34,12 +46,13 @@ int create_server() {
   return -1;
  }
 
+ 
  if (listen(fd, MAX_PENDING) < 0) {
   perror("Failed to listen on server socket");
   return -1;
  }
 
-
+ printf("Created socket, listening to : %d\n", fd);
  /* Add handler to handle events on fd */
 
  return fd;
@@ -108,7 +121,8 @@ void handle_client_file(int client_fd){
 		fflush(f);		
 	}
 	end:
-		fflush(f);	
+		fflush(f);
+		fclose(f);	
 }
 
 void accept_client(int server_fd){
@@ -140,13 +154,13 @@ void accept_client(int server_fd){
 
 		// if(ret == 0){
 		// 	// child handling over here
-			printf("Child things over here");
-			handle_client_file(client_fd);
+		fprintf(stderr, "Handling things on my side... ");
+		handle_client_file(client_fd);
 		// }
 		// else{
 		// 	//close()
 		// }
-
+		printf("Finished with one client!\n");
 		
 	}
 }

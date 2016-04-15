@@ -1,36 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+
 #include "handler.h"
 
 #define MAX_LINE_SIZE 255
 
-int connect_server() {
- struct sockaddr_un addr;
- int fd;
-
- if ((fd = socket(AF_LOCAL, SOCK_STREAM, 0)) < 0) {
-  perror("Failed to create client socket");
-  return fd;
- }
-
- memset(&addr, 0, sizeof(addr));
-
- addr.sun_family = AF_LOCAL;
- strcpy(addr.sun_path, SOCKET_PATH);
-
- if (connect(fd,
-             (struct sockaddr *) &(addr),
-             sizeof(addr)) < 0) {
-  perror("Failed to connect to server");
-  return -1;
- }
-
-
- /* Add handler to handle events */
-
- return fd;
-}
 
 static int
 send_file_descriptor(
@@ -70,13 +42,10 @@ send_file_descriptor(
 
 // Local handler that runs on the server
 void handle_client(int client_socket,
-		struct sockaddr_in *client_socket_addr) {
+		struct sockaddr_in *client_socket_addr, int local_server_fd) {
 
-	int local_server = connect_server();
-	int ret = send_file_descriptor(local_server, client_socket);
+	int ret = send_file_descriptor(local_server_fd, client_socket);
 	if(ret == -1){
 		perror("Something went wrong sending over unix sockets");
 	}
-
-
 	}
