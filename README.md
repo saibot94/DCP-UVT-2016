@@ -6,6 +6,7 @@ Repository containing code samples for the Distributed and Concurrent Programmin
 ## Unix domain socket examples with 1 big server handing the client's file descriptor to several local servers
 
 To run the app:
+
 1. Make the local_server 
 
 2. Make the bsd_sockets server
