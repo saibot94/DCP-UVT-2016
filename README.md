@@ -3,7 +3,9 @@
 Repository containing code samples for the Distributed and Concurrent Programming lecture, spring 2016, UVT
 
 
-## Unix domain socket examples with 1 big server handing the client's file descriptor to several local servers
+## Unix domain socket examples
+
+This example has 1 big server handing the client's file descriptor to several local servers
 
 To run the app:
 
